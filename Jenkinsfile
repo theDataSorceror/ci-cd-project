@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/thedatasorceror/ci-cd-project.git'
+                checkout scm  // This automatically uses GitHub repository and branch configured in Jenkins
             }
         }
         stage('Build') {
