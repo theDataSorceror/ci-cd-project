@@ -1,8 +1,7 @@
 pipeline {
     agent any
     environment {
-        GREETING = "Hello, Jenkins!"
-        DEPLOY_ENV = "staging"  // This can later be dynamically set (e.g., prod, dev)
+        RECIPIENTS = "${env.EMAIL_RECIPIENTS}"
     }
     stages {
         stage('Clone Repo') {
@@ -13,26 +12,29 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Building the application..."
-                echo "Build Number: ${BUILD_NUMBER}"
-                echo "Branch: ${GIT_BRANCH}"
             }
         }
         stage('Test') {
             steps {
                 echo "Running tests..."
-                echo "Testing in environment: ${DEPLOY_ENV}"
             }
         }
         stage('Deploy') {
             steps {
-                script {
-                    if (DEPLOY_ENV == "staging") {
-                        echo "Deploying to Staging..."
-                    } else {
-                        echo "Skipping Deployment"
-                    }
-                }
+                echo "Deploying application..."
             }
+        }
+    }
+    post {
+        success {
+            emailext subject: "✅ Jenkins Build Successful: ${JOB_NAME} #${BUILD_NUMBER}",
+                     body: "Great job! The build for ${JOB_NAME} #${BUILD_NUMBER} was successful.\nCheck logs at ${BUILD_URL}",
+                     to: "${RECIPIENTS}"
+        }
+        failure {
+            emailext subject: "❌ Jenkins Build Failed: ${JOB_NAME} #${BUILD_NUMBER}",
+                     body: "Oops! The build for ${JOB_NAME} #${BUILD_NUMBER} failed.\nCheck logs at ${BUILD_URL}",
+                     to: "${RECIPIENTS}"
         }
     }
 }
