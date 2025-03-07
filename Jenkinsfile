@@ -9,6 +9,13 @@ pipeline {
                 archiveArtifacts artifacts: 'artifact.txt', fingerprint: true
             }
         }
+        stage('Test') {
+            steps {
+                echo "Running tests..."
+                sh 'echo "<testsuite><testcase classname=\\"ExampleTest\\" name=\\"Test1\\"/></testsuite>" > test-results.xml'
+                junit 'test-results.xml'
+            }
+        }
     }
 
     post {
