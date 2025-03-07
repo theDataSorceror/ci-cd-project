@@ -2,9 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+            stage('Build') {
             steps {
                 echo "Building the application..."
+                sh 'echo "This is a build artifact" > artifact.txt'  // Example file
+                archiveArtifacts artifacts: 'artifact.txt', fingerprint: true
             }
         }
     }
